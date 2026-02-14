@@ -44,10 +44,52 @@ function move(i){
 }
 
 function ai(){
-  let empty=board.map((v,i)=>v==""?i:null).filter(v=>v!==null);
-  if(empty.length===0)return;
-  board[empty[Math.floor(Math.random()*empty.length)]]="💙";
-  update();
+
+  // 1️⃣ Try to win
+  for(let w of wins){
+    let [a,b,c] = w;
+    let line = [board[a], board[b], board[c]];
+    if(line.filter(v => v === "💙").length === 2 && line.includes("")){
+      board[w[line.indexOf("")]] = "💙";
+      update();
+      if(check("💙")) end("I win 😏");
+      return;
+    }
+  }
+
+  // 2️⃣ Block player win
+  for(let w of wins){
+    let [a,b,c] = w;
+    let line = [board[a], board[b], board[c]];
+    if(line.filter(v => v === "❤️").length === 2 && line.includes("")){
+      board[w[line.indexOf("")]] = "💙";
+      update();
+      return;
+    }
+  }
+
+  // 3️⃣ Take center if free
+  if(board[4] === ""){
+    board[4] = "💙";
+    update();
+    return;
+  }
+
+  // 4️⃣ Take random corner
+  let corners = [0,2,6,8].filter(i => board[i] === "");
+  if(corners.length > 0){
+    board[corners[Math.floor(Math.random()*corners.length)]] = "💙";
+    update();
+    return;
+  }
+
+  // 5️⃣ Take any empty
+  let empty = board.map((v,i)=>v==""?i:null).filter(v=>v!==null);
+  if(empty.length > 0){
+    board[empty[Math.floor(Math.random()*empty.length)]] = "💙";
+    update();
+  }
+
   if(check("💙")) end("I win 😏");
 }
 
@@ -299,4 +341,5 @@ function createFinalHeart(){
   screen.appendChild(h);
   setTimeout(()=>h.remove(),8000);
 }
+
 
