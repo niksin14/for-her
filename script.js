@@ -33,7 +33,8 @@ function createBoard(){
 createBoard();
 
 function move(i){
-  if(!active||board[i]!="")return;
+  if(!active||board[i]!="") return;
+
   board[i]="❤️";
   update();
 
@@ -104,13 +105,9 @@ function check(sym){
 function end(msg){
   document.getElementById("gameStatus").innerText=msg;
   active=false;
-  let btn=document.getElementById("toQA");
 
-  if(msg==="You win 😍"){
-    btn.style.display="inline-block";
-  }else{
-    btn.style.display="none";
-  }
+  let btn=document.getElementById("toQA");
+  btn.style.display = (msg==="You win 😍") ? "inline-block" : "none";
 }
 
 function resetGame(){
@@ -180,28 +177,22 @@ function answer(i,btn){
 
 /* ================= HEART GAME ================= */
 
-let score=0, interval, missed=0;
+let score=0, interval=null, missed=0;
 
 function startHeartGame(){
-
-  // Stop any running interval
   clearInterval(interval);
 
-  // Reset values
-  score = 0;
-  missed = 0;
-
-  document.getElementById("heartScore").innerText = score;
+  score=0;
+  missed=0;
+  document.getElementById("heartScore").innerText=score;
 
   nextStage(5);
 
-  // Clear heart area completely
-  let area = document.getElementById("heartGame");
-  area.innerHTML = "";
+  let area=document.getElementById("heartGame");
+  area.innerHTML="";
 
   showHeartInstruction();
 }
-
 
 function showHeartInstruction(){
   let area=document.getElementById("heartGame");
@@ -241,7 +232,7 @@ function createHeart(){
   h.classList.add("falling");
   h.innerText="💖";
   h.style.left=Math.random()*90+"%";
-  h.style.animationDuration=(Math.random()*1.5+2)+"s"; // faster fall
+  h.style.animationDuration=(Math.random()*1.5+2)+"s";
 
   h.onclick=function(){
     h.remove();
@@ -260,7 +251,6 @@ function createHeart(){
     if(document.body.contains(h)){
       h.remove();
       missed++;
-
       if(missed>2){
         clearInterval(interval);
         showHeartFail();
@@ -288,7 +278,6 @@ function showHeartCompletion(){
   overlay.innerHTML=`
     <div style="background:rgba(255,255,255,0.3);padding:25px;border-radius:20px;color:white;text-align:center;width:85%;">
       <h2>You caught all my love 💖</h2>
-      <p>You didn’t miss a single one 😌</p>
       <button id="continueAfterHeart">Continue 💗</button>
     </div>
   `;
@@ -320,7 +309,6 @@ function showHeartFail(){
   overlay.innerHTML=`
     <div style="background:rgba(255,255,255,0.3);padding:25px;border-radius:20px;color:white;text-align:center;width:85%;">
       <h2>You missed too much love 😏</h2>
-      <p>You missed so heart!. Try again 💗</p>
       <button id="restartHeartGame">Restart</button>
     </div>
   `;
@@ -328,11 +316,8 @@ function showHeartFail(){
   area.appendChild(overlay);
 
   document.getElementById("restartHeartGame").onclick=function(){
-  clearInterval(interval);
-  overlay.remove();
-  startHeartGame();
-};
-
+    overlay.remove();
+    startHeartGame();
   };
 }
 
@@ -355,7 +340,7 @@ function showFinal(){
   setInterval(createFinalHeart,700);
 }
 
-/* Floating background hearts */
+/* Background floating hearts */
 
 function bgHeart(){
   let h=document.createElement("div");
@@ -379,4 +364,3 @@ function createFinalHeart(){
   screen.appendChild(h);
   setTimeout(()=>h.remove(),8000);
 }
-
