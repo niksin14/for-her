@@ -125,7 +125,7 @@ function resetGame(){
 const questions=[
 {q:"What is my favourite food?",o:["Chicken","Varan Batti","Puran Podi"],a:0},
 {q:"My favourite color?",o:["Green","Blue","White"],a:0},
-{q:"My favourite place to visit?",o:["Mountains","A peaceful place","Any other country"],a:1}
+{q:"My favourite place to visit?",o:["Beach","A peaceful place","Any other country"],a:1}
 ];
 
 let current=0;
@@ -183,12 +183,25 @@ function answer(i,btn){
 let score=0, interval, missed=0;
 
 function startHeartGame(){
-  score=0;
-  missed=0;
-  document.getElementById("heartScore").innerText=score;
+
+  // Stop any running interval
+  clearInterval(interval);
+
+  // Reset values
+  score = 0;
+  missed = 0;
+
+  document.getElementById("heartScore").innerText = score;
+
   nextStage(5);
+
+  // Clear heart area completely
+  let area = document.getElementById("heartGame");
+  area.innerHTML = "";
+
   showHeartInstruction();
 }
+
 
 function showHeartInstruction(){
   let area=document.getElementById("heartGame");
@@ -307,7 +320,7 @@ function showHeartFail(){
   overlay.innerHTML=`
     <div style="background:rgba(255,255,255,0.3);padding:25px;border-radius:20px;color:white;text-align:center;width:85%;">
       <h2>You missed too much love 😏</h2>
-      <p>You can only miss 2 hearts. Try again 💗</p>
+      <p>You missed so heart!. Try again 💗</p>
       <button id="restartHeartGame">Restart</button>
     </div>
   `;
@@ -315,8 +328,11 @@ function showHeartFail(){
   area.appendChild(overlay);
 
   document.getElementById("restartHeartGame").onclick=function(){
-    overlay.remove();
-    startHeartGame();
+  clearInterval(interval);
+  overlay.remove();
+  startHeartGame();
+};
+
   };
 }
 
@@ -363,3 +379,4 @@ function createFinalHeart(){
   screen.appendChild(h);
   setTimeout(()=>h.remove(),8000);
 }
+
