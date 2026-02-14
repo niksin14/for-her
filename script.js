@@ -13,7 +13,7 @@ function updateProgress(n){
   document.getElementById("progressFill").style.width=(main/4)*100+"%";
 }
 
-/* ================= XO GAME ================= */
+/* ================= TIC TAC TOE ================= */
 
 let board=["","","","","","","","",""];
 let active=true;
@@ -45,48 +45,48 @@ function move(i){
 
 function ai(){
 
-  // 1️⃣ Try to win
+  // Try to win
   for(let w of wins){
-    let [a,b,c] = w;
-    let line = [board[a], board[b], board[c]];
-    if(line.filter(v => v === "💙").length === 2 && line.includes("")){
-      board[w[line.indexOf("")]] = "💙";
+    let [a,b,c]=w;
+    let line=[board[a],board[b],board[c]];
+    if(line.filter(v=>v==="💙").length===2 && line.includes("")){
+      board[w[line.indexOf("")]]="💙";
       update();
       if(check("💙")) end("I win 😏");
       return;
     }
   }
 
-  // 2️⃣ Block player win
+  // Block player
   for(let w of wins){
-    let [a,b,c] = w;
-    let line = [board[a], board[b], board[c]];
-    if(line.filter(v => v === "❤️").length === 2 && line.includes("")){
-      board[w[line.indexOf("")]] = "💙";
+    let [a,b,c]=w;
+    let line=[board[a],board[b],board[c]];
+    if(line.filter(v=>v==="❤️").length===2 && line.includes("")){
+      board[w[line.indexOf("")]]="💙";
       update();
       return;
     }
   }
 
-  // 3️⃣ Take center if free
-  if(board[4] === ""){
-    board[4] = "💙";
+  // Take center
+  if(board[4]===""){
+    board[4]="💙";
     update();
     return;
   }
 
-  // 4️⃣ Take random corner
-  let corners = [0,2,6,8].filter(i => board[i] === "");
-  if(corners.length > 0){
-    board[corners[Math.floor(Math.random()*corners.length)]] = "💙";
+  // Take corner
+  let corners=[0,2,6,8].filter(i=>board[i]==="");
+  if(corners.length>0){
+    board[corners[Math.floor(Math.random()*corners.length)]]="💙";
     update();
     return;
   }
 
-  // 5️⃣ Take any empty
-  let empty = board.map((v,i)=>v==""?i:null).filter(v=>v!==null);
-  if(empty.length > 0){
-    board[empty[Math.floor(Math.random()*empty.length)]] = "💙";
+  // Random
+  let empty=board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+  if(empty.length>0){
+    board[empty[Math.floor(Math.random()*empty.length)]]="💙";
     update();
   }
 
@@ -104,7 +104,6 @@ function check(sym){
 function end(msg){
   document.getElementById("gameStatus").innerText=msg;
   active=false;
-
   let btn=document.getElementById("toQA");
 
   if(msg==="You win 😍"){
@@ -124,9 +123,9 @@ function resetGame(){
 /* ================= Q&A ================= */
 
 const questions=[
-{q:"What is my favourite food?",o:["Chicken","Varan Batti","Puran Poli"],a:0},
+{q:"What is my favourite food?",o:["Chicken","Varan Batti","Puran Podi"],a:0},
 {q:"My favourite color?",o:["Green","Blue","White"],a:0},
-{q:"My favourite place to visit?",o:["Beach","A peaceful place","Any other country"],a:1}
+{q:"My favourite place to visit?",o:["Mountains","A peaceful place","Any other country"],a:1}
 ];
 
 let current=0;
@@ -159,7 +158,6 @@ function answer(i,btn){
   if(i===correct){
     btn.classList.add("correct");
     document.getElementById("qaResult").innerText="Correct 😍";
-
     setTimeout(()=>{
       current++;
       if(current<questions.length){
@@ -168,11 +166,9 @@ function answer(i,btn){
         startHeartGame();
       }
     },800);
-
   }else{
     btn.classList.add("wrong");
-    document.getElementById("qaResult").innerText="Seriously! 😏 Try again!";
-
+    document.getElementById("qaResult").innerText="Wrong 😏 Try again!";
     setTimeout(()=>{
       buttons.forEach(b=>{
         b.disabled=false;
@@ -184,10 +180,11 @@ function answer(i,btn){
 
 /* ================= HEART GAME ================= */
 
-let score=0, interval;
+let score=0, interval, missed=0;
 
 function startHeartGame(){
   score=0;
+  missed=0;
   document.getElementById("heartScore").innerText=score;
   nextStage(5);
   showHeartInstruction();
@@ -212,7 +209,7 @@ function showHeartInstruction(){
   overlay.innerHTML=`
     <div style="background:rgba(255,255,255,0.25);padding:20px;border-radius:20px;color:white;text-align:center;width:85%;">
       <h2>💖 Ready?</h2>
-      <p>Collect <b>10 hearts</b> to unlock the next stage.</p>
+      <p>Collect <b>10 hearts</b>. You can only miss 2 😏</p>
       <button id="startCatchBtn">Start Catching 💗</button>
     </div>
   `;
@@ -221,7 +218,7 @@ function showHeartInstruction(){
 
   document.getElementById("startCatchBtn").onclick=function(){
     overlay.remove();
-    interval=setInterval(createHeart,800);
+    interval=setInterval(createHeart,700);
   };
 }
 
@@ -231,7 +228,7 @@ function createHeart(){
   h.classList.add("falling");
   h.innerText="💖";
   h.style.left=Math.random()*90+"%";
-  h.style.animationDuration = (Math.random()*1.5+2)+"s";
+  h.style.animationDuration=(Math.random()*1.5+2)+"s"; // faster fall
 
   h.onclick=function(){
     h.remove();
@@ -245,7 +242,18 @@ function createHeart(){
   };
 
   area.appendChild(h);
-  setTimeout(()=>h.remove(),5000);
+
+  setTimeout(()=>{
+    if(document.body.contains(h)){
+      h.remove();
+      missed++;
+
+      if(missed>2){
+        clearInterval(interval);
+        showHeartFail();
+      }
+    }
+  },5000);
 }
 
 function showHeartCompletion(){
@@ -280,6 +288,38 @@ function showHeartCompletion(){
   };
 }
 
+function showHeartFail(){
+  let area=document.getElementById("heartGame");
+
+  let overlay=document.createElement("div");
+  overlay.style.position="absolute";
+  overlay.style.top="0";
+  overlay.style.left="0";
+  overlay.style.width="100%";
+  overlay.style.height="100%";
+  overlay.style.display="flex";
+  overlay.style.justifyContent="center";
+  overlay.style.alignItems="center";
+  overlay.style.borderRadius="15px";
+  overlay.style.background="linear-gradient(135deg,#ff9a9e,#fad0c4)";
+  overlay.style.zIndex="20";
+
+  overlay.innerHTML=`
+    <div style="background:rgba(255,255,255,0.3);padding:25px;border-radius:20px;color:white;text-align:center;width:85%;">
+      <h2>You missed too much love 😏</h2>
+      <p>You can only miss 2 hearts. Try again 💗</p>
+      <button id="restartHeartGame">Restart</button>
+    </div>
+  `;
+
+  area.appendChild(overlay);
+
+  document.getElementById("restartHeartGame").onclick=function(){
+    overlay.remove();
+    startHeartGame();
+  };
+}
+
 /* ================= CONFIRMATION ================= */
 
 function scaredMessage(stage){
@@ -299,7 +339,7 @@ function showFinal(){
   setInterval(createFinalHeart,700);
 }
 
-/* ================= FLOATING BACKGROUND HEARTS ================= */
+/* Floating background hearts */
 
 function bgHeart(){
   let h=document.createElement("div");
@@ -313,24 +353,6 @@ function bgHeart(){
 }
 setInterval(bgHeart,500);
 
-/* Alternate typing bubbles */
-
-setInterval(()=>{
-  let girlBubble=document.querySelector(".girl .bubble");
-  let boyBubble=document.querySelector(".boy .bubble");
-
-  girlBubble.style.opacity="1";
-  boyBubble.style.opacity="0.4";
-
-  setTimeout(()=>{
-    girlBubble.style.opacity="0.4";
-    boyBubble.style.opacity="1";
-  },1200);
-
-},2400);
-
-/* Final floating hearts */
-
 function createFinalHeart(){
   let screen=document.getElementById("finalScreen");
   let h=document.createElement("div");
@@ -341,6 +363,3 @@ function createFinalHeart(){
   screen.appendChild(h);
   setTimeout(()=>h.remove(),8000);
 }
-
-
-
